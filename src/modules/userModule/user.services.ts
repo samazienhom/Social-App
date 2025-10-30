@@ -10,10 +10,12 @@ export class UserServices{
     profileImage=async(req:Request,res:Response)=>{
         const file=req.file as Express.Multer.File
         const user=res.locals.user as HUserDocument
-        const result=await uploadFile({
+        const path=await uploadFile({
             file,
             path:`${user._id}/profileImage`
         })
-        return successHandler({res,data:result})
+        user.profileImage=path as string
+        await user.save()
+        return successHandler({res,data:path})
     }
 }
