@@ -3,7 +3,7 @@ import { sendEmail } from "./send.email";
 //const emailEmitter=new EventEmitter()
 export enum EMAIL_EVENTS{
     VERIFY_EMAIL="verify_email",
-    PESET_PASSWORD="reset_password"
+    RESET_PASSWORD="reset_password"
 }
 export class EmailEvents{
     constructor(private readonly emitter:EventEmitter){}
@@ -17,6 +17,13 @@ export class EmailEvents{
 const emitter=new EventEmitter()
 export const emailEmitter=new EmailEvents(emitter)
 emailEmitter.subscribe(EMAIL_EVENTS.VERIFY_EMAIL,({to,subject,html}:{
+    to:string,
+    subject:string,
+    html:string
+})=>{
+sendEmail({to,subject,html})
+})
+emailEmitter.subscribe(EMAIL_EVENTS.RESET_PASSWORD,({to,subject,html}:{
     to:string,
     subject:string,
     html:string

@@ -40,6 +40,10 @@ const userSchema = new mongoose_1.Schema({
     emailOtp: {
         otp: String,
         expiredAt: Date
+    },
+    passOtp: {
+        otp: String,
+        expiredAt: Date
     }
 }, {
     timestamps: true

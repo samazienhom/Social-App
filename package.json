@@ -11,11 +11,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.920.0",
+    "@aws-sdk/lib-storage": "^3.920.0",
     "bcrypt": "^6.0.0",
     "concurrently": "^9.2.1",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.19.2",
+    "multer": "^2.0.2",
     "nanoid": "^5.1.6",
     "nodemailer": "^7.0.10",
     "zod": "^4.1.12"
@@ -24,6 +27,7 @@
     "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^2.0.0",
     "@types/nodemailer": "^7.0.2"
   }
 }

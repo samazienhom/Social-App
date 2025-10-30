@@ -8,7 +8,7 @@ export const generateToken=({
     signature:string,
     options?:jwt.SignOptions
 })=>{
-    return jwt.sign(payload,signature,{expiresIn:"1 D"})
+    return jwt.sign(payload,signature,options)
 }
 
 export const verifyToken=({

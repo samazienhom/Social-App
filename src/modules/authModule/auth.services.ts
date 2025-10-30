@@ -7,9 +7,10 @@ import { successHandler } from '../../utils/successHandler';
 import { otp_tamplate } from '../../utils/email/otp.tamplate';
 import { createOtp } from '../../utils/email/createOtp';
 import { EMAIL_EVENTS, emailEmitter, EmailEvents } from '../../utils/email/email.events';
-import { InvalidCredentialsException, OtpExpiredException, OtpNotFoundException, OtpNotValidException, UserNotFoundException } from '../../utils/errors/errors.exceptions';
+import { InvalidCredentialsException, NotConfirmedException, OtpExpiredException, OtpNotFoundException, OtpNotValidException, UserNotFoundException } from '../../utils/errors/errors.exceptions';
 import { generateToken } from '../../utils/security/token';
 import { HUserDocument, IUser } from '../userModule/user.types';
+import { decodeToken, tokenTypesEnum } from '../../middleware/auth.middleware';
 
 export class AuthServices {
     private userModel = new UserRepo
@@ -121,48 +122,126 @@ export class AuthServices {
         return successHandler({ res })
     }
 
-    login=async (req: Request, res: Response): Promise<Response> =>{
+    login = async (req: Request, res: Response): Promise<Response> => {
         const {
             email,
             password
-        }:loginDTO=req.body
-      const user=  await this.userModel.findByEmail({email})
-      if(!user){
-        throw new InvalidCredentialsException()
-      }
-      const isValidPasswprd=await compare(password,user.password)
-      if(!isValidPasswprd){
-        throw new InvalidCredentialsException()
-      }
-     const accessToken=generateToken({
-        payload:{
-           _id:user._id 
-        },
-        signature:process.env.ACCESS_SIGNATURE as string,
-        options:{
-            expiresIn:"1 H"
+        }: loginDTO = req.body
+        const user = await this.userModel.findByEmail({ email })
+        if (!user) {
+            throw new InvalidCredentialsException()
         }
-     })
-         const refreshToken=generateToken({
-        payload:{
-           _id:user._id 
-        },
-        signature:process.env.REFRESH_SIGNATURE as string,
-        options:{
-            expiresIn:"7 D"
+        const isValidPasswprd = await compare(password, user.password)
+        if (!isValidPasswprd) {
+            throw new InvalidCredentialsException()
         }
-     })
-     return successHandler({res,data:{
-        accessToken,
-        refreshToken
-     }})   
+        const accessToken = generateToken({
+            payload: {
+                _id: user._id
+            },
+            signature: process.env.ACCESS_SIGNATURE as string,
+            options: {
+                expiresIn: "1 H"
+            }
+        })
+        const refreshToken = generateToken({
+            payload: {
+                _id: user._id
+            },
+            signature: process.env.REFRESH_SIGNATURE as string,
+            options: {
+                expiresIn: "7D"
+            }
+        })
+        return successHandler({
+            res, data: {
+                accessToken,
+                refreshToken
+            }
+        })
     }
 
-    getUserProfile=async (req: Request, res: Response)=>{
-        const user:HUserDocument=res.locals.user
-        user.firstName=user.firstName+" updated"
+    refreshToken = async (req: Request, res: Response): Promise<Response> => {
+        const {
+            authorization
+        } = req.headers
+        const user = await decodeToken({ authorization: authorization as string, tokenTypes: tokenTypesEnum.REFRESH })
+        const accessToken = generateToken({
+            payload: {
+                _id: user._id
+            },
+            signature: process.env.ACCESS_SIGNATURE as string,
+            options: {
+                expiresIn: "1 H"
+            }
+        })
+        return successHandler({ res, data: { accessToken } })
+    }
+
+    getUserProfile = async (req: Request, res: Response) => {
+        const user: HUserDocument = res.locals.user
+        // user.firstName=user.firstName+" updated"
+
+        console.log({file:req.file});
+        
         await user.save()
-        return successHandler({res,data:user})
+        return successHandler({ res, data: user })
     }
 
+    forgetPass = async (req: Request, res: Response) => {
+        const { email } = req.body
+        const user = await this.userModel.findByEmail({ email })
+        if (!user) {
+            throw new UserNotFoundException("email not found")
+        }
+        if (!user.isConfirmed) {
+            throw new NotConfirmedException
+        }
+        const otp = createOtp()
+        const subject = "Forget paasword"
+        const html = otp_tamplate({
+            otp: otp,
+            name: `${user.firstName} ${user.lastName}`,
+            subject: subject
+        })
+        emailEmitter.publish(EMAIL_EVENTS.RESET_PASSWORD, {
+            to: email,
+            subject,
+            html
+        })
+        await user.updateOne({
+            passOtp: {
+                otp: await hash(otp),
+                expiredAt: new Date(Date.now() + 30 * 1000)
+            }
+        })
+    }
+    resetPass = async (req: Request, res: Response) => {
+        const { email, otp, password } = req.body
+        const user = await this.userModel.findByEmail({ email })
+        if (!user) {
+            throw new UserNotFoundException("email not found")
+        }
+        if (!user.isConfirmed) {
+            throw new NotConfirmedException
+        }
+        const isExpired = user.passOtp.expiredAt < new Date(Date.now())
+        if (isExpired) {
+            throw new OtpExpiredException()
+        }
+        const isValidOtp = await compare(otp, user.passOtp.otp)
+        if (!isValidOtp) {
+            throw new OtpNotValidException
+        }
+        if (!user.passOtp) {
+            throw new ApplicationError("use forget password first", 404)
+        }
+        await user.updateOne({
+            $unset: {
+                passOtp: ""
+            },
+            password: await hash(password)
+        })
+        successHandler({ res })
+    }
 }

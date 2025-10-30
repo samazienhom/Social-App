@@ -42,10 +42,15 @@ const userSchema=new Schema<IUser>({
      emailOtp:{
         otp:String,
         expiredAt:Date
+     },
+       passOtp:{
+        otp:String,
+        expiredAt:Date
      }
 
 },{
     timestamps:true
 })
+
 
 export const UserModel=models.users || model<IUser>('users',userSchema)

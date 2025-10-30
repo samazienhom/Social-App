@@ -16,6 +16,10 @@ export interface IUser {
         otp:string,
         expiredAt:Date
     }
+     passOtp:{
+        otp:string,
+        expiredAt:Date
+    }
 }
 
 export type HUserDocument=HydratedDocument<IUser>

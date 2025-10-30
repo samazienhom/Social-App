@@ -16,7 +16,7 @@ export const decodeToken = async ({
     tokenTypes
 }: {
     authorization: string,
-    tokenTypes: tokenTypesEnum
+    tokenTypes?: tokenTypesEnum
 }) => {
     if (!authorization) {
         throw new InvalidTokenException()
