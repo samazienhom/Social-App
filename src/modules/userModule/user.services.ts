@@ -15,7 +15,7 @@ export class UserServices{
             path:`${user._id}/profileImage`
         })
         user.profileImage=path as string
-        await user.save()
+        await user.save( )
         return successHandler({res,data:path})
     }
 }

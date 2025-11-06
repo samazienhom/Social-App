@@ -16,7 +16,7 @@ authRouter.patch('/confirm-email', (0, validation_middleware_1.default)(auth_val
 authRouter.patch('/resend-otp', (0, validation_middleware_1.default)(auth_validation_1.resendOtpSchema), authServices.resendOtp);
 authRouter.post('/login', (0, validation_middleware_1.default)(auth_validation_1.loginSchema), authServices.login);
 authRouter.post('/refresh-token', authServices.refreshToken);
-authRouter.get('/get-user-profile', (0, multer_1.uploadFile)({ storeIn: multer_1.StoreInEnum.disk }).single('image'), auth_middleware_1.auth, authServices.getUserProfile);
+authRouter.get('/get-user-profile', (0, multer_1.uploadMulterFile)({ storeIn: multer_1.StoreInEnum.disk }).single('image'), auth_middleware_1.auth, authServices.getUserProfile);
 authRouter.patch('/forget-pass', authServices.forgetPass);
 authRouter.patch('/reset-pass', authServices.resetPass);
 exports.default = authRouter;

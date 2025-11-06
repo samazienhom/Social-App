@@ -244,4 +244,6 @@ export class AuthServices {
         })
         successHandler({ res })
     }
+
+ 
 }

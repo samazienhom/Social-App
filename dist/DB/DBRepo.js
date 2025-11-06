@@ -22,5 +22,17 @@ class DBRepo {
         const createdDoc = await this.model.create(doc);
         return createdDoc;
     };
+    findOneAndDelete = async ({ id, options = {} }) => {
+        const doc = await this.model.findOneAndDelete({ _id: id }, options);
+        return doc;
+    };
+    findOneAndUpdate = async ({ id, update, options = {} }) => {
+        const doc = await this.model.findOneAndUpdate({ _id: id }, update, options);
+        return doc;
+    };
+    inserMany = async ({ docs }) => {
+        const createdDocs = await this.model.insertMany(docs);
+        return createdDocs;
+    };
 }
 exports.DBRepo = DBRepo;

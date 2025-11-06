@@ -6,6 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const routes_1 = __importDefault(require("./modules/routes"));
 const connectDb_1 = require("./DB/config/connectDb");
+const user_repo_1 = require("./DB/Repos/user.repo");
+const user_model_1 = require("./DB/models/user.model");
 const app = (0, express_1.default)();
 const bootstrap = async () => {
     app.use(express_1.default.json());
@@ -20,6 +22,76 @@ const bootstrap = async () => {
             status: err.statusCode || 500
         });
     });
+    const userModel = new user_repo_1.UserRepo;
+    const testDocumentSaveHook = async () => {
+        const user = new user_model_1.UserModel({
+            firstName: "sama",
+            lastName: "mamdouh",
+            email: `${Date.now()}_s@gmail.com`,
+            password: "123"
+        });
+        // const user = await userModel.findOne({
+        //     filter: {
+        //         _id: "690cca21839db85519292a7a"
+        //     }
+        // })
+        if (!user) {
+            return;
+        }
+        //user.email=`${Date.now()}_${user.email}`
+        await user.save();
+        console.log("saved");
+    };
+    const DeleteAndUpdateHook = async () => {
+        const user = await userModel.findOne({
+            filter: {
+                _id: "690cca21839db85519292a7a"
+            }
+        });
+        if (!user) {
+            return;
+        }
+        await user.updateOne({
+            email: `${Date.now()}_${user.email}`
+        });
+        await user.deleteOne();
+        console.log("updated and deleted");
+    };
+    const queryFindOneHook = async () => {
+        const user = await userModel.findOne({
+            filter: {
+                _id: "690cd5084029470260caf869"
+            }
+        });
+        console.log(user);
+    };
+    const findByIdandUpdateHook = async () => {
+        const user = userModel.findOneAndUpdate({
+            id: "690cd5084029470260caf869",
+            update: {
+                email: `${Date.now()}_s@gmail.com`
+            },
+            options: {
+                new: true
+            }
+        });
+    };
+    const InserManyHook = async () => {
+        const users = await userModel.inserMany({
+            docs: [{
+                    firstName: "test1",
+                    lastName: "mamdouh",
+                    email: `${Date.now()}_s@gmail.com`,
+                    password: "123"
+                }]
+        });
+        console.log("inserted successfully", users);
+    };
+    InserManyHook();
+    findByIdandUpdateHook();
+    queryFindOneHook();
+    DeleteAndUpdateHook();
+    testDocumentSaveHook();
     // emailEmitter.publish(EMAIL_EVENTS.VERIFY_EMAIL,{to:"xxxsama87@gmail.com",subject:"hi",html:"<h1>hi</h1>"})
     app.listen(port, () => {
         console.log(`Server is running on port ${port}`);
