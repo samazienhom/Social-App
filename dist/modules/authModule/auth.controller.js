@@ -19,4 +19,7 @@ authRouter.post('/refresh-token', authServices.refreshToken);
 authRouter.get('/get-user-profile', (0, multer_1.uploadMulterFile)({ storeIn: multer_1.StoreInEnum.disk }).single('image'), auth_middleware_1.auth, authServices.getUserProfile);
 authRouter.patch('/forget-pass', authServices.forgetPass);
 authRouter.patch('/reset-pass', authServices.resetPass);
+authRouter.patch('/two-step-verification', auth_middleware_1.auth, authServices.twoStepVerification);
+authRouter.patch('/confirm-two-step-verification', (0, validation_middleware_1.default)(auth_validation_1.twoStepVerificationSchema), authServices.verifyTwoStepVerification);
+authRouter.patch('/confirm-login', (0, validation_middleware_1.default)(auth_validation_1.loginConfirmationSchema), authServices.loginConfirmation);
 exports.default = authRouter;

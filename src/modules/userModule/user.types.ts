@@ -20,6 +20,15 @@ export interface IUser {
         otp:string,
         expiredAt:Date
     }
+    twoStepVerification:{
+        enabled:boolean,
+        otp:string,
+        expiredAt:Date
+    }
+    loginConfirmation:{
+        otp:string,
+        expiredAt:Date
+    }
 }
 
 export type HUserDocument=HydratedDocument<IUser>

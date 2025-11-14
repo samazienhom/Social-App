@@ -87,11 +87,11 @@ const bootstrap = async () => {
         });
         console.log("inserted successfully", users);
     };
-    InserManyHook();
-    findByIdandUpdateHook();
-    queryFindOneHook();
-    DeleteAndUpdateHook();
-    testDocumentSaveHook();
+    // InserManyHook()
+    // findByIdandUpdateHook()
+    // queryFindOneHook()
+    // DeleteAndUpdateHook()
+    // testDocumentSaveHook()
     // emailEmitter.publish(EMAIL_EVENTS.VERIFY_EMAIL,{to:"xxxsama87@gmail.com",subject:"hi",html:"<h1>hi</h1>"})
     app.listen(port, () => {
         console.log(`Server is running on port ${port}`);

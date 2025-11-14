@@ -45,3 +45,9 @@ export const loginSchema=z.object({
     email:z.email(),
         password:z.string()
 })
+export const twoStepVerificationSchema=z.object({
+    code:z.string().length(6)
+})
+export const loginConfirmationSchema=z.object({
+    otp:z.string().length(6) 
+})

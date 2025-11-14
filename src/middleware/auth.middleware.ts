@@ -19,9 +19,13 @@ export const decodeToken = async ({
     tokenTypes?: tokenTypesEnum
 }) => {
     if (!authorization) {
+        console.log("1");
+        
         throw new InvalidTokenException()
     }
     if (!authorization.startsWith(process.env.BEARER as string)) {
+        console.log("2");
+        
         throw new InvalidTokenException()
     }
    // console.log({authorization:authorization.split(" ")[1]});
@@ -36,9 +40,13 @@ export const decodeToken = async ({
     //console.log({payload});
     const user=await userModel.findById({id:payload._id})   
     if(!user){
+        console.log("3");
+        
         throw new InvalidTokenException()
     }
     if(!user.isConfirmed){
+        console.log("4");
+        
         throw new InvalidTokenException()
     }
     return user

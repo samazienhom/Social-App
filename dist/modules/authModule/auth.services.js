@@ -112,11 +112,34 @@ class AuthServices {
         const { email, password } = req.body;
         const user = await this.userModel.findByEmail({ email });
         if (!user) {
+            console.log("1");
             throw new errors_exceptions_1.InvalidCredentialsException();
         }
-        const isValidPasswprd = await (0, hash_1.compare)(password, user.password);
+        const isValidPasswprd = (0, hash_1.compare)(password, user.password);
         if (!isValidPasswprd) {
             throw new errors_exceptions_1.InvalidCredentialsException();
+        }
+        if (user.twoStepVerification) {
+            if (user.twoStepVerification.enabled) {
+                const otp = (0, createOtp_1.createOtp)();
+                const html = (0, otp_tamplate_1.otp_tamplate)({
+                    otp: otp,
+                    name: `${user.firstName} ${user.lastName}`,
+                    subject: "2 step login"
+                });
+                email_events_1.emailEmitter.publish(email_events_1.EMAIL_EVENTS.TWO_STEP_VERIFICATION, {
+                    to: email,
+                    subject: "2 step login",
+                    html
+                });
+                await user.updateOne({
+                    loginConfirmation: {
+                        otp: await (0, hash_1.hash)(otp),
+                        expiredAt: new Date(Date.now() + 30 * 1000)
+                    }
+                });
+                return (0, successHandler_1.successHandler)({ res });
+            }
         }
         const accessToken = (0, token_1.generateToken)({
             payload: {
@@ -142,6 +165,44 @@ class AuthServices {
                 refreshToken
             }
         });
+    };
+    loginConfirmation = async (req, res) => {
+        const { email, otp } = req.body;
+        const user = await this.userModel.findByEmail({ email });
+        if (!user) {
+            throw new errors_exceptions_1.UserNotFoundException();
+        }
+        if (!user.loginConfirmation) {
+            throw new errors_exceptions_1.OtpNotFoundException();
+        }
+        if (user.loginConfirmation.expiredAt < new Date(Date.now())) {
+            throw new errors_exceptions_1.OtpExpiredException();
+        }
+        if (!await (0, hash_1.compare)(otp, user.loginConfirmation.otp)) {
+            throw new errors_exceptions_1.OtpNotValidException();
+        }
+        const accessToken = (0, token_1.generateToken)({
+            payload: {
+                _id: user._id
+            },
+            signature: process.env.ACCESS_SIGNATURE,
+            options: {
+                expiresIn: "1 H"
+            }
+        });
+        const refreshToken = (0, token_1.generateToken)({
+            payload: {
+                _id: user._id
+            },
+            signature: process.env.REFRESH_SIGNATURE,
+            options: {
+                expiresIn: "7 D"
+            }
+        });
+        return (0, successHandler_1.successHandler)({ res, data: {
+                accessToken,
+                refreshToken
+            } });
     };
     refreshToken = async (req, res) => {
         const { authorization } = req.headers;
@@ -219,6 +280,54 @@ class AuthServices {
             password: await (0, hash_1.hash)(password)
         });
         (0, successHandler_1.successHandler)({ res });
+    };
+    twoStepVerification = async (req, res) => {
+        const otp = (0, createOtp_1.createOtp)();
+        const user = res.locals.user;
+        const html = (0, otp_tamplate_1.otp_tamplate)({
+            otp: otp,
+            name: user.firstName + " " + user.lastName,
+            subject: "Two step verification code"
+        });
+        email_events_1.emailEmitter.publish(email_events_1.EMAIL_EVENTS.TWO_STEP_VERIFICATION, {
+            to: user.email,
+            subject: "Two step verification code",
+            html
+        });
+        await user.updateOne({
+            twoStepVerification: {
+                enabled: false,
+                otp: await (0, hash_1.hash)(otp),
+                expiredAt: new Date(Date.now() + 5 * 60 * 1000)
+            }
+        });
+        return (0, successHandler_1.successHandler)({ res });
+    };
+    verifyTwoStepVerification = async (req, res) => {
+        const { email, code } = req.body;
+        const user = await this.userModel.findByEmail({ email });
+        if (!user) {
+            throw new errors_exceptions_1.UserNotFoundException();
+        }
+        if (!user.twoStepVerification.otp) {
+            throw new errors_exceptions_1.OtpNotFoundException();
+        }
+        if (user.twoStepVerification.expiredAt < new Date(Date.now())) {
+            throw new errors_exceptions_1.OtpExpiredException();
+        }
+        if (!(await (0, hash_1.compare)(code, user.twoStepVerification.otp))) {
+            throw new errors_exceptions_1.OtpNotValidException();
+        }
+        await user.updateOne({
+            $set: {
+                "twoStepVerification.enabled": true
+            },
+            $unset: {
+                "twoStepVerification.otp": "",
+                "twoStepVerification.expiredAt": ""
+            }
+        });
+        return (0, successHandler_1.successHandler)({ res });
     };
 }
 exports.AuthServices = AuthServices;

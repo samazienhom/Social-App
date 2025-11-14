@@ -98,11 +98,11 @@ const bootstrap = async () => {
       console.log("inserted successfully",users);
       
     }
-    InserManyHook()
-    findByIdandUpdateHook()
-    queryFindOneHook()
-    DeleteAndUpdateHook()
-    testDocumentSaveHook()
+    // InserManyHook()
+    // findByIdandUpdateHook()
+    // queryFindOneHook()
+    // DeleteAndUpdateHook()
+    // testDocumentSaveHook()
 
 
 
