@@ -57,6 +57,11 @@ const userSchema = new Schema<IUser>({
     loginConfirmation:{
         otp:string,
         expiredAt:Date
+    },
+    friends:{
+        type:[Schema.Types.ObjectId],
+        ref:'users',
+        default:[]
     }
 }, {
     timestamps: true

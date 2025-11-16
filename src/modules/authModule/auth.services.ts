@@ -132,11 +132,9 @@ export class AuthServices {
         const user = await this.userModel.findByEmail({ email })
     
         if (!user) {
-            console.log("1");
-            
             throw new InvalidCredentialsException()
         }
-        const isValidPasswprd = compare(password, user.password)
+        const isValidPasswprd = await compare(password, user.password)
         
         if (!isValidPasswprd) {
             throw new InvalidCredentialsException()
@@ -172,7 +170,7 @@ export class AuthServices {
             },
             signature: process.env.ACCESS_SIGNATURE as string,
             options: {
-                expiresIn: "1 H"
+                expiresIn: "1 D"
             }
         })
         const refreshToken = generateToken({
@@ -248,11 +246,14 @@ export class AuthServices {
         return successHandler({ res, data: { accessToken } })
     }
 
-    getUserProfile = async (req: Request, res: Response) => {
-        const user: HUserDocument = res.locals.user
+    me = async (req: Request, res: Response) => {
+        let user: HUserDocument = res.locals.user
         // user.firstName=user.firstName+" updated"
-
-        console.log({file:req.file});
+        user=await user.populate([
+           { path: 'friends',
+            select: '-password '
+            },
+        ])
         
         await user.save()
         return successHandler({ res, data: user })

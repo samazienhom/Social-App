@@ -8,9 +8,12 @@ const routes_1 = __importDefault(require("./modules/routes"));
 const connectDb_1 = require("./DB/config/connectDb");
 const user_repo_1 = require("./DB/Repos/user.repo");
 const user_model_1 = require("./DB/models/user.model");
+const cors_1 = __importDefault(require("cors"));
+const gateway_1 = require("./modules/gateway/gateway");
 const app = (0, express_1.default)();
 const bootstrap = async () => {
     app.use(express_1.default.json());
+    app.use((0, cors_1.default)());
     app.use('/api/v1', routes_1.default);
     const port = process.env.PORT || 5000;
     await (0, connectDb_1.DBconnection)();
@@ -93,8 +96,9 @@ const bootstrap = async () => {
     // DeleteAndUpdateHook()
     // testDocumentSaveHook()
     // emailEmitter.publish(EMAIL_EVENTS.VERIFY_EMAIL,{to:"xxxsama87@gmail.com",subject:"hi",html:"<h1>hi</h1>"})
-    app.listen(port, () => {
+    const server = app.listen(port, () => {
         console.log(`Server is running on port ${port}`);
     });
+    (0, gateway_1.initialize)(server);
 };
 exports.default = bootstrap;

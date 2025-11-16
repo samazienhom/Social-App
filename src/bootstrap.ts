@@ -9,10 +9,15 @@ import { IUser } from "./modules/userModule/user.types";
 import { UserModel } from "./DB/models/user.model";
 import { fi } from "zod/v4/locales";
 import { lowercase } from "zod/v4/core/regexes.cjs";
+import { Server, Socket } from "socket.io";
+import cors from "cors"
+import { initialize } from "./modules/gateway/gateway";
 const app = express();
 const bootstrap = async () => {
     app.use(express.json());
+    app.use(cors())
     app.use('/api/v1', router)
+
     const port = process.env.PORT || 5000;
     await DBconnection()
 
@@ -31,12 +36,12 @@ const bootstrap = async () => {
 
     const userModel = new UserRepo
     const testDocumentSaveHook = async () => {
-          const user= new UserModel({
-            firstName:"sama",
-                lastName:"mamdouh",
-                email:`${Date.now()}_s@gmail.com` ,
-                password:"123"
-          })
+        const user = new UserModel({
+            firstName: "sama",
+            lastName: "mamdouh",
+            email: `${Date.now()}_s@gmail.com`,
+            password: "123"
+        })
         // const user = await userModel.findOne({
         //     filter: {
         //         _id: "690cca21839db85519292a7a"
@@ -73,43 +78,41 @@ const bootstrap = async () => {
                 _id: "690cd5084029470260caf869"
             }
         })
-        console.log(user); 
+        console.log(user);
     }
     const findByIdandUpdateHook = async () => {
-    const user = userModel.findOneAndUpdate({
-        id:"690cd5084029470260caf869",
-        update:{
-           email: `${Date.now()}_s@gmail.com`
-        },
-        options:{
-            new:true
-        }
-    })
+        const user = userModel.findOneAndUpdate({
+            id: "690cd5084029470260caf869",
+            update: {
+                email: `${Date.now()}_s@gmail.com`
+            },
+            options: {
+                new: true
+            }
+        })
     }
     const InserManyHook = async () => {
-      const users=await userModel.inserMany({
-        docs:[{
-            firstName:"test1",
-            lastName:"mamdouh",
-            email:`${Date.now()}_s@gmail.com`,
-            password:"123"
-        }]
-      })
-      console.log("inserted successfully",users);
-      
+        const users = await userModel.inserMany({
+            docs: [{
+                firstName: "test1",
+                lastName: "mamdouh",
+                email: `${Date.now()}_s@gmail.com`,
+                password: "123"
+            }]
+        })
+        console.log("inserted successfully", users);
+
     }
     // InserManyHook()
     // findByIdandUpdateHook()
     // queryFindOneHook()
     // DeleteAndUpdateHook()
     // testDocumentSaveHook()
-
-
-
-
     // emailEmitter.publish(EMAIL_EVENTS.VERIFY_EMAIL,{to:"xxxsama87@gmail.com",subject:"hi",html:"<h1>hi</h1>"})
-    app.listen(port, () => {
+
+    const server = app.listen(port, () => {
         console.log(`Server is running on port ${port}`);
     })
+    initialize(server)
 }
 export default bootstrap;

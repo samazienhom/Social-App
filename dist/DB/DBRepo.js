@@ -26,8 +26,8 @@ class DBRepo {
         const doc = await this.model.findOneAndDelete({ _id: id }, options);
         return doc;
     };
-    findOneAndUpdate = async ({ id, update, options = {} }) => {
-        const doc = await this.model.findOneAndUpdate({ _id: id }, update, options);
+    findOneAndUpdate = async ({ filter, update, options = {} }) => {
+        const doc = await this.model.findOneAndUpdate(filter, update, options);
         return doc;
     };
     inserMany = async ({ docs }) => {

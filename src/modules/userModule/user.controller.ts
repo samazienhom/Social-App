@@ -6,4 +6,6 @@ const userRouter=Router()
 
 const userServices=new UserServices()
 userRouter.patch('/profile-image',auth,uploadMulterFile({}).single('image'),userServices.profileImage)
+userRouter.patch('/send-friend-request',auth,userServices.sendFriendRequest)
+userRouter.patch('/accept-friend-request/:id',auth,userServices.acceptFriendRequest)
 export default userRouter

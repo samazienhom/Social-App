@@ -54,6 +54,11 @@ const userSchema = new mongoose_1.Schema({
     loginConfirmation: {
         otp: zod_1.string,
         expiredAt: Date
+    },
+    friends: {
+        type: [mongoose_1.Schema.Types.ObjectId],
+        ref: 'users',
+        default: []
     }
 }, {
     timestamps: true

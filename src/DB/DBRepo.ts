@@ -1,4 +1,4 @@
-import { CreateOptions, Model, ProjectionType, QueryOptions, RootFilterQuery, Types } from "mongoose";
+import { CreateOptions, FilterQuery, Model, ProjectionType, QueryOptions, RootFilterQuery, Types, UpdateQuery } from "mongoose";
 import { IUser } from "../modules/userModule/user.types";
 import { UserModel } from "./models/user.model";
 
@@ -58,15 +58,15 @@ export abstract class DBRepo <T>{
         return doc
     }
     findOneAndUpdate=async({
-        id,
+        filter,
         update,
         options = {}
     }: {
-        id: Types.ObjectId|string,
-        update?: Partial<T>,
+        filter: FilterQuery<T>,
+        update?: UpdateQuery<T>,
         options?: QueryOptions
     }) => {
-        const doc = await this.model.findOneAndUpdate({ _id: id }, update, options)
+        const doc = await this.model.findOneAndUpdate(filter, update, options)
         return doc
     }
 

@@ -12,11 +12,9 @@ var tokenTypesEnum;
 const userModel = new user_repo_1.UserRepo();
 const decodeToken = async ({ authorization, tokenTypes }) => {
     if (!authorization) {
-        console.log("1");
         throw new errors_exceptions_1.InvalidTokenException();
     }
     if (!authorization.startsWith(process.env.BEARER)) {
-        console.log("2");
         throw new errors_exceptions_1.InvalidTokenException();
     }
     // console.log({authorization:authorization.split(" ")[1]});
@@ -30,11 +28,9 @@ const decodeToken = async ({ authorization, tokenTypes }) => {
     //console.log({payload});
     const user = await userModel.findById({ id: payload._id });
     if (!user) {
-        console.log("3");
         throw new errors_exceptions_1.InvalidTokenException();
     }
     if (!user.isConfirmed) {
-        console.log("4");
         throw new errors_exceptions_1.InvalidTokenException();
     }
     return user;

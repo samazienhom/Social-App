@@ -1,4 +1,4 @@
-import { HydratedDocument } from "mongoose"
+import { HydratedDocument, Types } from "mongoose"
 
 export interface IUser {
     firstName:string
@@ -29,6 +29,7 @@ export interface IUser {
         otp:string,
         expiredAt:Date
     }
+    friends:[Types.ObjectId]
 }
 
 export type HUserDocument=HydratedDocument<IUser>

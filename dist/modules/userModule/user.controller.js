@@ -7,4 +7,6 @@ const user_services_1 = require("./user.services");
 const userRouter = (0, express_1.Router)();
 const userServices = new user_services_1.UserServices();
 userRouter.patch('/profile-image', auth_middleware_1.auth, (0, multer_1.uploadMulterFile)({}).single('image'), userServices.profileImage);
+userRouter.patch('/send-friend-request', auth_middleware_1.auth, userServices.sendFriendRequest);
+userRouter.patch('/accept-friend-request/:id', auth_middleware_1.auth, userServices.acceptFriendRequest);
 exports.default = userRouter;
