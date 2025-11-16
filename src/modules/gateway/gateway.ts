@@ -9,6 +9,7 @@ import { ChatGateway } from "../chatModule/chat.gateway";
 export interface AuthSocket extends Socket {
     user?: HydratedDocument<IUser>
 }
+export const connectedSockets=new Map<string,string[]>()
 
 export const initialize = (httpServer: HttpServer) => {
     const chatGateway = new ChatGateway()
@@ -22,20 +23,18 @@ export const initialize = (httpServer: HttpServer) => {
         try {
             const user = await decodeToken({ authorization: socket.handshake.auth.authorization as string, tokenTypes: tokenTypesEnum.ACCESS })
             socket.user = user
-            console.log('socket auth success for user:', user?._id)
             next()
         }
         catch (err) {
-            console.log(socket.handshake);
-             
-            console.log('socket auth failed', err)
             next(new Error("unauthorized"))
         }
     })
 
     io.on("connection", (socket: AuthSocket) => {
-        console.log('socket connected:', socket.id, 'user:', socket.user?._id)
+        // console.log('socket connected:', socket.id, 'user:', socket.user?._id)
+        const currentSockets=connectedSockets.get(socket.user?._id.toString() as string)||[]
+        currentSockets.push(socket.id)
+        connectedSockets.set(socket.user?._id.toString() as string,currentSockets)
         chatGateway.register(socket)
     })
-
 }
