@@ -168,16 +168,18 @@ export class AuthServices {
             payload: {
                 _id: user._id
             },
-            signature: process.env.ACCESS_SIGNATURE as string,
+            secret: process.env.ACCESS_SECRET as string,
             options: {
                 expiresIn: "1 D"
             }
+            
         })
+        
         const refreshToken = generateToken({
             payload: {
                 _id: user._id
             },
-            signature: process.env.REFRESH_SIGNATURE as string,
+            secret: process.env.REFRESH_SECRET as string,
             options: {
                 expiresIn: "7D"
             }
@@ -190,7 +192,7 @@ export class AuthServices {
         })
     }
 
-    loginConfirmation=async(req:Request,res:Response){
+    loginConfirmation=async(req:Request,res:Response)=>{
         const {email,otp}=req.body
         const user =await this.userModel.findByEmail({email})
         if(!user){
@@ -209,7 +211,7 @@ export class AuthServices {
             payload:{
                 _id:user._id
             },
-            signature:process.env.ACCESS_SIGNATURE as string,
+            secret:process.env.ACCESS_SECRET as string,
             options:{
                 expiresIn:"1 H"
             }
@@ -218,7 +220,7 @@ export class AuthServices {
             payload:{
                 _id:user._id
             },
-            signature:process.env.REFRESH_SIGNATURE as string,
+            secret:process.env.REFRESH_SECRET as string,
             options:{
                 expiresIn:"7 D"
             }
@@ -238,7 +240,7 @@ export class AuthServices {
             payload: {
                 _id: user._id
             },
-            signature: process.env.ACCESS_SIGNATURE as string,
+            secret: process.env.ACCESS_SECRET as string,
             options: {
                 expiresIn: "1 H"
             }

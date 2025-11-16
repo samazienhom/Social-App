@@ -13,12 +13,13 @@ const initialize = (httpServer) => {
     });
     io.use(async (socket, next) => {
         try {
-            const user = await (0, auth_middleware_1.decodeToken)({ authorization: socket.handshake.auth.authorization });
+            const user = await (0, auth_middleware_1.decodeToken)({ authorization: socket.handshake.auth.authorization, tokenTypes: auth_middleware_1.tokenTypesEnum.ACCESS });
             socket.user = user;
             console.log('socket auth success for user:', user?._id);
             next();
         }
         catch (err) {
+            console.log(socket.handshake);
             console.log('socket auth failed', err);
             next(new Error("unauthorized"));
         }

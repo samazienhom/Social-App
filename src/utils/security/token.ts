@@ -1,23 +1,26 @@
 import jwt, { JwtPayload } from 'jsonwebtoken'
 export const generateToken=({
     payload={},
-    signature,
+    secret,
     options={}
+    
 }:{
     payload:any,
-    signature:string,
+    secret:string,
     options?:jwt.SignOptions
 })=>{
-    return jwt.sign(payload,signature,options)
+    console.log("SECRET USED ON SIGN:", secret);
+    return jwt.sign(payload,secret,options)
 }
 
 export const verifyToken=({
     token,
-    signature
+    secret
 }:{
 token:string,
-signature:string
+secret:string
 }):JwtPayload=>{
-    const payload=jwt.verify(token,signature) as JwtPayload
+    console.log("SECRET USED ON VERIFY:", secret);
+    const payload=jwt.verify(token,secret) as JwtPayload
     return payload
 }

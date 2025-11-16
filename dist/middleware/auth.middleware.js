@@ -21,10 +21,11 @@ const decodeToken = async ({ authorization, tokenTypes }) => {
     const token = authorization.split(" ")[1];
     const payload = (0, token_1.verifyToken)({
         token,
-        signature: tokenTypes == tokenTypesEnum.ACCESS ?
-            process.env.ACCESS_SIGNATURE
-            : process.env.REFRESH_SIGNATURE
+        secret: tokenTypes == tokenTypesEnum.ACCESS ?
+            process.env.ACCESS_SECRET
+            : process.env.REFRESH_SECRET
     });
+    console.log("PAYLOAD:", payload);
     //console.log({payload});
     const user = await userModel.findById({ id: payload._id });
     if (!user) {

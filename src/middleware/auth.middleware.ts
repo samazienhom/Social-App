@@ -32,15 +32,14 @@ export const decodeToken = async ({
     const token:string = authorization.split(" ")[1] as string
     const payload: JwtPayload = verifyToken({
         token,
-        signature: tokenTypes == tokenTypesEnum.ACCESS ?
-            process.env.ACCESS_SIGNATURE as string
-            : process.env.REFRESH_SIGNATURE as string
+        secret: tokenTypes == tokenTypesEnum.ACCESS ?
+            process.env.ACCESS_SECRET as string
+            : process.env.REFRESH_SECRET as string
     })
+    console.log("PAYLOAD:", payload);
     //console.log({payload});
     const user=await userModel.findById({id:payload._id})   
     if(!user){
-    
-        
         throw new InvalidTokenException()
     }
     if(!user.isConfirmed){

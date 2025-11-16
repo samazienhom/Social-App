@@ -144,7 +144,7 @@ class AuthServices {
             payload: {
                 _id: user._id
             },
-            signature: process.env.ACCESS_SIGNATURE,
+            secret: process.env.ACCESS_SECRET,
             options: {
                 expiresIn: "1 D"
             }
@@ -153,7 +153,7 @@ class AuthServices {
             payload: {
                 _id: user._id
             },
-            signature: process.env.REFRESH_SIGNATURE,
+            secret: process.env.REFRESH_SECRET,
             options: {
                 expiresIn: "7D"
             }
@@ -184,7 +184,7 @@ class AuthServices {
             payload: {
                 _id: user._id
             },
-            signature: process.env.ACCESS_SIGNATURE,
+            secret: process.env.ACCESS_SECRET,
             options: {
                 expiresIn: "1 H"
             }
@@ -193,7 +193,7 @@ class AuthServices {
             payload: {
                 _id: user._id
             },
-            signature: process.env.REFRESH_SIGNATURE,
+            secret: process.env.REFRESH_SECRET,
             options: {
                 expiresIn: "7 D"
             }
@@ -210,7 +210,7 @@ class AuthServices {
             payload: {
                 _id: user._id
             },
-            signature: process.env.ACCESS_SIGNATURE,
+            secret: process.env.ACCESS_SECRET,
             options: {
                 expiresIn: "1 H"
             }

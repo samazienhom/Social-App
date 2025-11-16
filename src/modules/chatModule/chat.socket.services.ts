@@ -31,7 +31,7 @@ export class ChatSocketServices {
         if(!chat){
             throw new Error("Chat not found")
         }
-        const res = await chat.updateOne({
+        await chat.updateOne({
             $push: {
                 messages: {
                     content,
