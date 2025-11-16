@@ -8,4 +8,6 @@ const chatRouter = (0, express_1.Router)({
 });
 const chatServices = new chat_services_1.ChatServices();
 chatRouter.get('/', auth_middleware_1.auth, chatServices.getChat);
+chatRouter.post('/create-group', auth_middleware_1.auth, chatServices.createGroup);
+chatRouter.get('/get-group-chat/:groupId', auth_middleware_1.auth, chatServices.getGroupChat);
 exports.default = chatRouter;

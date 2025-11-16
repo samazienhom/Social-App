@@ -8,5 +8,7 @@ const chatRouter=Router({
 const chatServices = new ChatServices()
 
 chatRouter.get('/',auth, chatServices.getChat)
+chatRouter.post('/create-group',auth, chatServices.createGroup)
+chatRouter.get('/get-group-chat/:groupId',auth,chatServices.getGroupChat)
 
 export default chatRouter

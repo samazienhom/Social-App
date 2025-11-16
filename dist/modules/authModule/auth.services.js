@@ -11,8 +11,10 @@ const email_events_1 = require("../../utils/email/email.events");
 const errors_exceptions_1 = require("../../utils/errors/errors.exceptions");
 const token_1 = require("../../utils/security/token");
 const auth_middleware_1 = require("../../middleware/auth.middleware");
+const chat_repo_1 = require("../../DB/Repos/chat.repo");
 class AuthServices {
     userModel = new user_repo_1.UserRepo;
+    chatModel = new chat_repo_1.ChatRepo;
     signup = async (req, res) => {
         const { email, firstName, lastName, age, phone, password } = req.body;
         const isEmailExist = await this.userModel.findByEmail({ email });
@@ -225,8 +227,17 @@ class AuthServices {
                 select: '-password '
             },
         ]);
-        await user.save();
-        return (0, successHandler_1.successHandler)({ res, data: user });
+        const groups = await this.chatModel.find({
+            filter: {
+                participants: {
+                    $in: [user._id]
+                },
+                group: {
+                    $exists: true
+                }
+            }
+        });
+        return (0, successHandler_1.successHandler)({ res, data: { user, groups } });
     };
     forgetPass = async (req, res) => {
         const { email } = req.body;

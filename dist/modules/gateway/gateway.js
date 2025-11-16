@@ -22,12 +22,26 @@ const initialize = (httpServer) => {
             next(new Error("unauthorized"));
         }
     });
-    io.on("connection", (socket) => {
-        // console.log('socket connected:', socket.id, 'user:', socket.user?._id)
+    const connect = (socket) => {
         const currentSockets = exports.connectedSockets.get(socket.user?._id.toString()) || [];
         currentSockets.push(socket.id);
         exports.connectedSockets.set(socket.user?._id.toString(), currentSockets);
+        console.log(exports.connectedSockets);
+    };
+    const disconnect = (socket) => {
+        socket.on('disconnect', () => {
+            let currentSockets = exports.connectedSockets.get(socket.user?._id.toString()) || [];
+            currentSockets = currentSockets.filter(id => {
+                return id != socket.id;
+            });
+            exports.connectedSockets.set(socket.user?._id.toString(), currentSockets);
+            console.log(exports.connectedSockets);
+        });
+    };
+    io.on("connection", (socket) => {
         chatGateway.register(socket);
+        connect(socket);
+        disconnect(socket);
     });
 };
 exports.initialize = initialize;

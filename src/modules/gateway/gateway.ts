@@ -9,7 +9,7 @@ import { ChatGateway } from "../chatModule/chat.gateway";
 export interface AuthSocket extends Socket {
     user?: HydratedDocument<IUser>
 }
-export const connectedSockets=new Map<string,string[]>()
+export const connectedSockets = new Map<string, string[]>()
 
 export const initialize = (httpServer: HttpServer) => {
     const chatGateway = new ChatGateway()
@@ -29,12 +29,30 @@ export const initialize = (httpServer: HttpServer) => {
             next(new Error("unauthorized"))
         }
     })
-
-    io.on("connection", (socket: AuthSocket) => {
-        // console.log('socket connected:', socket.id, 'user:', socket.user?._id)
-        const currentSockets=connectedSockets.get(socket.user?._id.toString() as string)||[]
+    const connect = (socket: AuthSocket) => {
+        const currentSockets = connectedSockets.get(socket.user?._id.toString() as string) || []
         currentSockets.push(socket.id)
-        connectedSockets.set(socket.user?._id.toString() as string,currentSockets)
+        connectedSockets.set(socket.user?._id.toString() as string, currentSockets)
+        console.log(connectedSockets);
+        
+    
+    }
+    const disconnect = (socket: AuthSocket) => {
+        socket.on('disconnect', () => {
+            let currentSockets = connectedSockets.get(socket.user?._id.toString() as string)||[]
+            currentSockets =currentSockets.filter(id=>{
+                return id !=socket.id
+            })
+            connectedSockets.set(socket.user?._id.toString() as string, currentSockets)
+            console.log(connectedSockets);
+            
+        })
+
+    }
+    io.on("connection", (socket: AuthSocket) => {
         chatGateway.register(socket)
+        connect(socket)
+        disconnect(socket)
     })
+
 }

@@ -9,5 +9,15 @@ class ChatEvents {
             this.chatSocketServices.sendMessage(socket, data);
         });
     };
+    joinRoom = async (socket) => {
+        socket.on('join_room', ({ roomId }) => {
+            this.chatSocketServices.joinRoom(socket, roomId);
+        });
+    };
+    sendGroupMessage = async (socket) => {
+        socket.on('sendGroupMessage', (data) => {
+            this.chatSocketServices.sendGroupMessage(socket, data);
+        });
+    };
 }
 exports.ChatEvents = ChatEvents;

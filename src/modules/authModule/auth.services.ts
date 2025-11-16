@@ -13,9 +13,11 @@ import { HUserDocument, IUser } from '../userModule/user.types';
 import { decodeToken, tokenTypesEnum } from '../../middleware/auth.middleware';
 import { en, th } from 'zod/v4/locales';
 import { string } from 'zod';
+import { ChatRepo } from '../../DB/Repos/chat.repo';
 
 export class AuthServices {
     private userModel = new UserRepo
+    private chatModel=new ChatRepo
     signup = async (req: Request, res: Response): Promise<Response> => {
         const {
             email,
@@ -256,9 +258,17 @@ export class AuthServices {
             select: '-password '
             },
         ])
-        
-        await user.save()
-        return successHandler({ res, data: user })
+        const groups=await this.chatModel.find({
+            filter:{
+                participants:{
+                    $in:[user._id]
+                },
+                group:{
+                    $exists:true
+                }
+            }
+        })
+        return successHandler({ res, data: {user ,groups}})
     }
 
     forgetPass = async (req: Request, res: Response) => {

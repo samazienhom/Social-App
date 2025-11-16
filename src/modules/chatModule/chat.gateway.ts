@@ -7,5 +7,7 @@ export class ChatGateway {
     register=(socket:AuthSocket)=>{
         // console.log('registering chat events for socket:', socket.id)
         this.chatEvents.sendMessage(socket)
+        this.chatEvents.joinRoom(socket)
+        this.chatEvents.sendGroupMessage(socket)
     }
 }

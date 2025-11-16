@@ -39,5 +39,63 @@ class ChatSocketServices {
         socket.to(gateway_1.connectedSockets.get(createdBy?.toString()) || []).emit('successMessage', content);
         socket.to(gateway_1.connectedSockets.get(to._id.toString()) || []).emit('newMessage', { content, from: { _id: createdBy } });
     };
+    joinRoom = async (socket, roomId) => {
+        try {
+            const group = await this.chatModel.findOne({
+                filter: {
+                    roomId,
+                    participants: {
+                        $in: socket.user?._id
+                    },
+                    group: {
+                        $exists: true
+                    }
+                }
+            });
+            if (!group) {
+                throw new Error("group not found");
+            }
+            socket.join(roomId);
+            console.log("user joined");
+        }
+        catch (error) {
+            socket.emit('customError', error);
+        }
+    };
+    sendGroupMessage = async (socket, { content, groupId }) => {
+        try {
+            const user = socket.user;
+            const group = await this.chatModel.findOne({
+                filter: {
+                    _id: groupId,
+                    participants: {
+                        $in: socket.user?._id
+                    },
+                    group: {
+                        $exists: true
+                    }
+                }
+            });
+            if (!group) {
+                throw new Error("group not found");
+            }
+            await group.updateOne({
+                $push: {
+                    messages: {
+                        content,
+                        createdBy: user?._id
+                    }
+                }
+            });
+            socket.emit('successMessage', content);
+            socket.to(gateway_1.connectedSockets.get(user?._id.toString()) || []).emit('successMessage', content);
+            socket.to(group.roomId).emit('newMessage', {
+                content, from: user, groupId
+            });
+        }
+        catch (error) {
+            socket.emit('customError', error);
+        }
+    };
 }
 exports.ChatSocketServices = ChatSocketServices;

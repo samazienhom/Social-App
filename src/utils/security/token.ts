@@ -9,7 +9,7 @@ export const generateToken=({
     secret:string,
     options?:jwt.SignOptions
 })=>{
-    console.log("SECRET USED ON SIGN:", secret);
+
     return jwt.sign(payload,secret,options)
 }
 
@@ -20,7 +20,6 @@ export const verifyToken=({
 token:string,
 secret:string
 }):JwtPayload=>{
-    console.log("SECRET USED ON VERIFY:", secret);
     const payload=jwt.verify(token,secret) as JwtPayload
     return payload
 }
