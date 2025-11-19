@@ -59,6 +59,15 @@ const userSchema = new mongoose_1.Schema({
         type: [mongoose_1.Schema.Types.ObjectId],
         ref: 'users',
         default: []
+    },
+    posts: {
+        type: [mongoose_1.Schema.Types.ObjectId],
+        ref: 'posts',
+        default: []
+    },
+    blockedUsers: {
+        type: [mongoose_1.Schema.Types.ObjectId],
+        ref: 'users'
     }
 }, {
     timestamps: true
@@ -106,4 +115,4 @@ const userSchema = new mongoose_1.Schema({
 //     console.log(this);
 //     console.log(docs);
 // })
-exports.UserModel = mongoose_1.models.users || (0, mongoose_1.model)('users', userSchema);
+exports.UserModel = (0, mongoose_1.model)('users', userSchema);

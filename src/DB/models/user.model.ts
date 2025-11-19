@@ -62,6 +62,15 @@ const userSchema = new Schema<IUser>({
         type:[Schema.Types.ObjectId],
         ref:'users',
         default:[]
+    },
+     posts:{
+        type:[Schema.Types.ObjectId],
+        ref:'posts',
+        default:[]
+    },
+    blockedUsers:{
+        type:[Schema.Types.ObjectId],
+        ref:'users'
     }
 }, {
     timestamps: true
@@ -115,4 +124,4 @@ const userSchema = new Schema<IUser>({
 //     console.log(docs);
 // })
 
-export const UserModel = models.users || model<IUser>('users', userSchema)
+export const UserModel = model<IUser>('users', userSchema)

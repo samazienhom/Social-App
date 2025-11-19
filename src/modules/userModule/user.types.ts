@@ -30,6 +30,8 @@ export interface IUser {
         expiredAt:Date
     }
     friends:[Types.ObjectId]
+    posts:[Types.ObjectId]
+    blockedUsers:[Types.ObjectId]
 }
 
 export type HUserDocument=HydratedDocument<IUser>

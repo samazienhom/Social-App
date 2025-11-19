@@ -6,6 +6,10 @@ const s3_services_1 = require("../../utils/multer/s3.services");
 const successHandler_1 = require("../../utils/successHandler");
 const friend_request_repo_1 = require("../../DB/Repos/friend.request.repo");
 const errors_exceptions_1 = require("../../utils/errors/errors.exceptions");
+const user_model_1 = require("../../DB/models/user.model");
+const post_model_1 = require("../../DB/models/post.model");
+const comment_model_1 = require("../../DB/models/comment.model");
+const reply_model_1 = require("../../DB/models/reply.model");
 class UserServices {
     userModel = new user_repo_1.UserRepo;
     profileImage = async (req, res) => {
@@ -90,6 +94,103 @@ class UserServices {
             }
         });
         return (0, successHandler_1.successHandler)({ res, data: friendRequest });
+    };
+    unfriend = async (req, res) => {
+        const { friendId } = req.body;
+        const friend = await user_model_1.UserModel.findById(friendId);
+        const user = res.locals.user;
+        if (!user.friends.includes(friendId)) {
+            throw new Error("You are not friends");
+        }
+        await user.updateOne({
+            $pull: {
+                friends: friend?._id
+            }
+        });
+        await friend?.updateOne({
+            $pull: {
+                friends: user._id
+            }
+        });
+        return (0, successHandler_1.successHandler)({ res });
+    };
+    blockUser = async (req, res) => {
+        const { blockUserId } = req.body;
+        const blockUser = await user_model_1.UserModel.findById(blockUserId);
+        const user = res.locals.user;
+        if (!blockUser) {
+            throw new errors_exceptions_1.UserNotFoundException();
+        }
+        if (user.blockedUsers.includes(blockUserId)) {
+            throw new Error("user already blocked");
+        }
+        if (user.friends.includes(blockUserId)) {
+            await user.updateOne({
+                $push: {
+                    blockedUsers: blockUser._id
+                },
+                $pull: {
+                    friends: blockUser._id
+                }
+            });
+        }
+        await user.updateOne({
+            $push: {
+                blockedUsers: blockUser._id
+            }
+        });
+        return (0, successHandler_1.successHandler)({ res });
+    };
+    deleteAccount = async (req, res) => {
+        const { userId } = req.params;
+        const isExist = await user_model_1.UserModel.findById(userId);
+        const user = res.locals.user;
+        if (!isExist) {
+            throw new errors_exceptions_1.UserNotFoundException();
+        }
+        if (user._id.toString() != isExist._id.toString()) {
+            throw new Error("can not delete someone else's account");
+        }
+        if (user.posts) {
+            const post = await post_model_1.PostModel.find({
+                createdBy: user._id
+            });
+            const userComments = await comment_model_1.CommentsModel.find({
+                createdBy: user._id
+            });
+            const userReplies = await reply_model_1.ReplyModel.find({
+                createdBy: user._id
+            });
+            for (const r of userReplies) {
+                await reply_model_1.ReplyModel.deleteOne(r._id);
+            }
+            for (const c of userComments) {
+                const commentReply = await reply_model_1.ReplyModel.find({
+                    comment: c._id
+                });
+                for (const r of commentReply) {
+                    await reply_model_1.ReplyModel.deleteOne(r._id);
+                }
+                await comment_model_1.CommentsModel.deleteOne(c._id);
+            }
+            for (const p of post) {
+                const postComments = await comment_model_1.CommentsModel.find({
+                    post: p._id
+                });
+                for (const c of postComments) {
+                    const commentReply = await reply_model_1.ReplyModel.find({
+                        comment: c._id
+                    });
+                    for (const r of commentReply) {
+                        await reply_model_1.ReplyModel.deleteOne(r._id);
+                    }
+                    await comment_model_1.CommentsModel.deleteOne(c._id);
+                }
+                await post_model_1.PostModel.deleteOne(p._id);
+            }
+        }
+        await user_model_1.UserModel.deleteOne(user._id);
+        return (0, successHandler_1.successHandler)({ res });
     };
 }
 exports.UserServices = UserServices;

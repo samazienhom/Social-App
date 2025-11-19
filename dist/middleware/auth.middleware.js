@@ -25,8 +25,6 @@ const decodeToken = async ({ authorization, tokenTypes }) => {
             process.env.ACCESS_SECRET
             : process.env.REFRESH_SECRET
     });
-    console.log("PAYLOAD:", payload);
-    //console.log({payload});
     const user = await userModel.findById({ id: payload._id });
     if (!user) {
         throw new errors_exceptions_1.InvalidTokenException();

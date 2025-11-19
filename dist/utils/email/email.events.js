@@ -9,6 +9,7 @@ var EMAIL_EVENTS;
     EMAIL_EVENTS["VERIFY_EMAIL"] = "verify_email";
     EMAIL_EVENTS["RESET_PASSWORD"] = "reset_password";
     EMAIL_EVENTS["TWO_STEP_VERIFICATION"] = "two_step_verification";
+    EMAIL_EVENTS["TAG"] = "tag";
 })(EMAIL_EVENTS || (exports.EMAIL_EVENTS = EMAIL_EVENTS = {}));
 class EmailEvents {
     emitter;
@@ -32,5 +33,8 @@ exports.emailEmitter.subscribe(EMAIL_EVENTS.RESET_PASSWORD, ({ to, subject, html
     (0, send_email_1.sendEmail)({ to, subject, html });
 });
 exports.emailEmitter.subscribe(EMAIL_EVENTS.TWO_STEP_VERIFICATION, ({ to, subject, html }) => {
+    (0, send_email_1.sendEmail)({ to, subject, html });
+});
+exports.emailEmitter.subscribe(EMAIL_EVENTS.TAG, ({ to, subject, html }) => {
     (0, send_email_1.sendEmail)({ to, subject, html });
 });

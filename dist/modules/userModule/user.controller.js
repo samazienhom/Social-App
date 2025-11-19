@@ -9,4 +9,7 @@ const userServices = new user_services_1.UserServices();
 userRouter.patch('/profile-image', auth_middleware_1.auth, (0, multer_1.uploadMulterFile)({}).single('image'), userServices.profileImage);
 userRouter.patch('/send-friend-request', auth_middleware_1.auth, userServices.sendFriendRequest);
 userRouter.patch('/accept-friend-request/:id', auth_middleware_1.auth, userServices.acceptFriendRequest);
+userRouter.patch('/unfriend', auth_middleware_1.auth, userServices.unfriend);
+userRouter.patch('/block', auth_middleware_1.auth, userServices.blockUser);
+userRouter.delete('/delete-account/:userId', auth_middleware_1.auth, userServices.deleteAccount);
 exports.default = userRouter;
