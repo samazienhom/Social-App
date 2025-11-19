@@ -5,8 +5,8 @@ const DBRepo_1 = require("../DBRepo");
 const friend_request_1 = require("../models/friend.request");
 class FrienddRequestRepo extends DBRepo_1.DBRepo {
     model;
-    constructor(model = friend_request_1.friendRequestModel) {
-        super(friend_request_1.friendRequestModel);
+    constructor(model = friend_request_1.FriendRequestModel) {
+        super(friend_request_1.FriendRequestModel);
         this.model = model;
     }
 }

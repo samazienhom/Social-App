@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.friendRequestModel = void 0;
+exports.FriendRequestModel = void 0;
 const mongoose_1 = require("mongoose");
 const friendRequestSchema = new mongoose_1.Schema({
     from: {
@@ -17,4 +17,4 @@ const friendRequestSchema = new mongoose_1.Schema({
 }, {
     timestamps: true
 });
-exports.friendRequestModel = (0, mongoose_1.model)('friend_requests', friendRequestSchema);
+exports.FriendRequestModel = (0, mongoose_1.model)('friend_requests', friendRequestSchema);

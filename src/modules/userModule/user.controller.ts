@@ -11,4 +11,5 @@ userRouter.patch('/accept-friend-request/:id',auth,userServices.acceptFriendRequ
 userRouter.patch('/unfriend',auth,userServices.unfriend)
 userRouter.patch('/block',auth,userServices.blockUser)
 userRouter.delete('/delete-account/:userId',auth,userServices.deleteAccount)
+userRouter.delete('/delete-friend-request/:id',auth,userServices.deleteFriendRequest)
 export default userRouter

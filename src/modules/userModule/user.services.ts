@@ -10,6 +10,7 @@ import { UserModel } from "../../DB/models/user.model";
 import { PostModel } from "../../DB/models/post.model";
 import { CommentsModel } from "../../DB/models/comment.model";
 import { ReplyModel } from "../../DB/models/reply.model";
+import { FriendRequestModel } from "../../DB/models/friend.request";
 
 export class UserServices {
     private userModel = new UserRepo
@@ -145,6 +146,23 @@ export class UserServices {
             }
         })
         return successHandler({ res })
+    }
+
+    deleteFriendRequest=async(req:Request,res:Response)=>{
+        const {id}=req.params
+        const friendRequest=await FriendRequestModel.findById(id)
+        if(!friendRequest){
+            throw new Error("Friend request not found"); 
+        }
+        const user=res.locals.user as HUserDocument
+        if(friendRequest.from.toString()!=user._id.toString() && friendRequest.to.toString()!=user._id.toString()){
+            throw new Error("Can't delete someone else's request");
+        }
+        if(friendRequest.acceptedAt){
+            throw new Error("Friend request accepted");
+        }
+        await friendRequest.deleteOne(friendRequest._id)
+        return successHandler({res})
     }
 
     deleteAccount = async (req: Request, res: Response) => {

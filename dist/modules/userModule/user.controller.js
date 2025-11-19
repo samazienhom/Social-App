@@ -12,4 +12,5 @@ userRouter.patch('/accept-friend-request/:id', auth_middleware_1.auth, userServi
 userRouter.patch('/unfriend', auth_middleware_1.auth, userServices.unfriend);
 userRouter.patch('/block', auth_middleware_1.auth, userServices.blockUser);
 userRouter.delete('/delete-account/:userId', auth_middleware_1.auth, userServices.deleteAccount);
+userRouter.delete('/delete-friend-request/:id', auth_middleware_1.auth, userServices.deleteFriendRequest);
 exports.default = userRouter;

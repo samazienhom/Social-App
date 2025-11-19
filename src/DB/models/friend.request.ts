@@ -26,4 +26,4 @@ const friendRequestSchema= new Schema<IFriendRequest>({
 })
 
 
-export const friendRequestModel=model<IFriendRequest>('friend_requests',friendRequestSchema);
+export const FriendRequestModel=model<IFriendRequest>('friend_requests',friendRequestSchema);

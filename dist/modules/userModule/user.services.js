@@ -10,6 +10,7 @@ const user_model_1 = require("../../DB/models/user.model");
 const post_model_1 = require("../../DB/models/post.model");
 const comment_model_1 = require("../../DB/models/comment.model");
 const reply_model_1 = require("../../DB/models/reply.model");
+const friend_request_1 = require("../../DB/models/friend.request");
 class UserServices {
     userModel = new user_repo_1.UserRepo;
     profileImage = async (req, res) => {
@@ -139,6 +140,22 @@ class UserServices {
                 blockedUsers: blockUser._id
             }
         });
+        return (0, successHandler_1.successHandler)({ res });
+    };
+    deleteFriendRequest = async (req, res) => {
+        const { id } = req.params;
+        const friendRequest = await friend_request_1.FriendRequestModel.findById(id);
+        if (!friendRequest) {
+            throw new Error("Friend request not found");
+        }
+        const user = res.locals.user;
+        if (friendRequest.from.toString() != user._id.toString() && friendRequest.to.toString() != user._id.toString()) {
+            throw new Error("Can't delete someone else's request");
+        }
+        if (friendRequest.acceptedAt) {
+            throw new Error("Friend request accepted");
+        }
+        await friendRequest.deleteOne(friendRequest._id);
         return (0, successHandler_1.successHandler)({ res });
     };
     deleteAccount = async (req, res) => {
