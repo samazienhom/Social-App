@@ -185,7 +185,7 @@ PORT=5000
 NODE_ENV=development
 
 # Database Configuration
-LOCAL_DB_URI=mongodb://localhost:27017/social-app
+LOCAL_DB_URI=
 # For MongoDB Atlas cloud:
 # LOCAL_DB_URI=mongodb+srv://username:password@cluster.mongodb.net/social-app?retryWrites=true&w=majority
 
