@@ -8,9 +8,11 @@ const auth_controller_1 = __importDefault(require("./authModule/auth.controller"
 const user_controller_1 = __importDefault(require("./userModule/user.controller"));
 const chat_controller_1 = __importDefault(require("./chatModule/chat.controller"));
 const post_controller_1 = __importDefault(require("./postModule/post.controller"));
+const comment_controller_1 = __importDefault(require("./commentModule/comment.controller"));
 const router = (0, express_1.Router)();
 router.use('/auth', auth_controller_1.default);
 router.use('/user', user_controller_1.default);
 router.use('/chat', chat_controller_1.default);
 router.use('/post', post_controller_1.default);
+router.use('/comment', comment_controller_1.default);
 exports.default = router;

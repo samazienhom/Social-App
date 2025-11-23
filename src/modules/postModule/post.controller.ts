@@ -16,15 +16,7 @@ postRouter.patch('/unlike-post/:id',auth,postServices.unlikePost)
 
 
 
-postRouter.post("/create-comment",auth,postServices.createComment)
-postRouter.patch('/freeze-comment/:id',postServices.freezeComment)
-postRouter.delete('/delete-comment/:id',auth,postServices.deleteComment)
-postRouter.patch('/update-comment/:id',auth,postServices.updateComment)
-postRouter.get("/get-comment-by-id/:id",postServices.getCommentById)
 
-
-postRouter.post('/create-reply',auth,postServices.createReply)
-postRouter.get('/comment-with-replies/:id',postServices.getCommentWithReply)
 
 postRouter.post('/tag',auth,postServices.sendTags)
 export default postRouter
